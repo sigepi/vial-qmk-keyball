@@ -354,7 +354,8 @@ endef
 
 .PRECIOUS: $(MASTER_OUTPUT)/obj.txt
 $(MASTER_OUTPUT)/obj.txt: $(MASTER_OUTPUT)/force
-	echo '$(OBJ)' | cmp -s - $@ || echo '$(OBJ)' > $@
+	$(file >$@.tmp,$(OBJ))
+	cmp -s $@.tmp $@ || cp $@.tmp $@
 
 .PRECIOUS: $(MASTER_OUTPUT)/ldflags.txt
 $(MASTER_OUTPUT)/ldflags.txt: $(MASTER_OUTPUT)/force
