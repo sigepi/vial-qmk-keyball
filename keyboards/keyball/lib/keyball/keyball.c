@@ -144,7 +144,11 @@ void keyboard_pre_init_kb(void) {
 
 void pointing_device_driver_init(void) {
 #if KEYBALL_MODEL != 46
-    keyball.this_have_ball = pmw3360_init();
+    // BMP slave can't send ball motion to master, and its SPI pins may be
+    // used for other things (e.g. encoders), so probe the sensor on master only.
+    if (is_bmp_keyboard_master()) {
+        keyball.this_have_ball = pmw3360_init();
+    }
 #endif
     if (keyball.this_have_ball) {
 #if defined(KEYBALL_PMW3360_UPLOAD_SROM_ID)
