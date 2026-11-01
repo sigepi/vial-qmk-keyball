@@ -47,6 +47,7 @@ static MSCMD_USER_RESULT usrcmd_enable_vial(MSOPT *msopt, MSCMD_USER_OBJECT usro
 static MSCMD_USER_RESULT usrcmd_factory_reset(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
 static MSCMD_USER_RESULT usrcmd_battery_check(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
 static MSCMD_USER_RESULT usrcmd_change_conn_mode(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
+static MSCMD_USER_RESULT usrcmd_send_data_s2m(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
 
 static const MSCMD_COMMAND_TABLE table[] = {{"help", usrcmd_help, "Show this message"},
                                             {"version", usrcmd_version, "Firmware version"},
@@ -66,6 +67,7 @@ static const MSCMD_COMMAND_TABLE table[] = {{"help", usrcmd_help, "Show this mes
                                             {"factory_reset", usrcmd_factory_reset, "Factory reset"},
                                             {"battery", usrcmd_battery_check, "Battery check"},
                                             {"mode", usrcmd_change_conn_mode, "Change connection mode"},
+                                            {"s2m", usrcmd_send_data_s2m, "Send user data to master"},
 #ifdef USER_DEFINED_MSCMD
                                             USER_DEFINED_MSCMD
 #endif
@@ -413,5 +415,30 @@ static MSCMD_USER_RESULT usrcmd_change_conn_mode(MSOPT *msopt, MSCMD_USER_OBJECT
 
     BMPAPI->ble.change_conn_mode(false);
     printf("Change to normal mode\n");
+    return 0;
+}
+
+static MSCMD_USER_RESULT usrcmd_send_data_s2m(MSOPT *msopt, MSCMD_USER_OBJECT usrobj) {
+    char arg[16];
+
+    if (msopt->argc < 3) {
+        printf("s2m <id> <data>\n");
+        return 1;
+    }
+
+    if (BMPAPI->ble.send_user_data_s2m == NULL) {
+        printf("send_user_data_s2m is not available\n");
+        return 1;
+    }
+
+    msopt_get_argv(msopt, 1, arg, sizeof(arg));
+    int32_t id = atoi(arg);
+
+    msopt_get_argv(msopt, 2, arg, sizeof(arg));
+    int32_t data = atoi(arg);
+
+    bmp_error_t res = BMPAPI->ble.send_user_data_s2m(id, data);
+    printf("send id:%u data:%u res:%d\n", (unsigned)(id & 0xff), (unsigned)(data & 0xff), res);
+
     return 0;
 }
