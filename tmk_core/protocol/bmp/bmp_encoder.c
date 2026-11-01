@@ -110,6 +110,10 @@ static void encoder_send_to_master(uint8_t index, int8_t steps) {
     int16_t unsent = encoder_unsent[index] + steps;
     unsent         = unsent > INT8_MAX ? INT8_MAX : unsent < INT8_MIN ? INT8_MIN : unsent;
 
+    if (BMPAPI->ble.send_user_data_s2m == NULL) {
+        return;
+    }
+
     if (unsent != 0 && BMPAPI->ble.send_user_data_s2m(ENCODER_USER_DATA_ID_BASE + index, (uint8_t)unsent) == BMP_OK) {
         unsent = 0;
     }
@@ -117,7 +121,7 @@ static void encoder_send_to_master(uint8_t index, int8_t steps) {
 }
 
 void encoder_init(void) {
-    if (bmp_config->mode == SPLIT_MASTER) {
+    if (bmp_config->mode == SPLIT_MASTER && BMPAPI->ble.set_user_data_cb != NULL) {
         BMPAPI->ble.set_user_data_cb(encoder_user_data_cb);
     }
 
