@@ -48,6 +48,9 @@ static MSCMD_USER_RESULT usrcmd_factory_reset(MSOPT *msopt, MSCMD_USER_OBJECT us
 static MSCMD_USER_RESULT usrcmd_battery_check(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
 static MSCMD_USER_RESULT usrcmd_change_conn_mode(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
 static MSCMD_USER_RESULT usrcmd_send_data_s2m(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
+#ifdef ENCODER_ENABLE
+static MSCMD_USER_RESULT usrcmd_encoder_status(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
+#endif
 
 static const MSCMD_COMMAND_TABLE table[] = {{"help", usrcmd_help, "Show this message"},
                                             {"version", usrcmd_version, "Firmware version"},
@@ -68,6 +71,9 @@ static const MSCMD_COMMAND_TABLE table[] = {{"help", usrcmd_help, "Show this mes
                                             {"battery", usrcmd_battery_check, "Battery check"},
                                             {"mode", usrcmd_change_conn_mode, "Change connection mode"},
                                             {"s2m", usrcmd_send_data_s2m, "Send user data to master"},
+#ifdef ENCODER_ENABLE
+                                            {"enc", usrcmd_encoder_status, "Show encoder status"},
+#endif
 #ifdef USER_DEFINED_MSCMD
                                             USER_DEFINED_MSCMD
 #endif
@@ -442,3 +448,12 @@ static MSCMD_USER_RESULT usrcmd_send_data_s2m(MSOPT *msopt, MSCMD_USER_OBJECT us
 
     return 0;
 }
+
+#ifdef ENCODER_ENABLE
+void bmp_encoder_print_status(void);
+
+static MSCMD_USER_RESULT usrcmd_encoder_status(MSOPT *msopt, MSCMD_USER_OBJECT usrobj) {
+    bmp_encoder_print_status();
+    return 0;
+}
+#endif

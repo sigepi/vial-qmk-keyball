@@ -31,6 +31,10 @@ static int    encoder_count                    = 0;
 static int8_t encoder_value[NUM_ENCODERS_MAX]  = {0};
 static int8_t encoder_unsent[NUM_ENCODERS_MAX] = {0};
 
+// For the "enc" CLI command
+static int     encoder_init_result                 = -1;
+static int32_t encoder_raw_total[NUM_ENCODERS_MAX] = {0};
+
 typedef struct {
     uint8_t index;
     int8_t  steps; // positive: clockwise
@@ -134,7 +138,14 @@ void encoder_init(void) {
     }
 
     if (encoder_count > 0) {
-        BMPAPI->encoder.init(ENCODER_SCANTIME_MS, bmp_config->encoder.pin_a, bmp_config->encoder.pin_b, encoder_count);
+        encoder_init_result = BMPAPI->encoder.init(ENCODER_SCANTIME_MS, bmp_config->encoder.pin_a, bmp_config->encoder.pin_b, encoder_count);
+    }
+}
+
+void bmp_encoder_print_status(void) {
+    printf("mode:%d count:%d init:%d\n", bmp_config->mode, encoder_count, encoder_init_result);
+    for (int i = 0; i < encoder_count; i++) {
+        printf("enc%d a:%d b:%d res:%d raw_total:%ld value:%d unsent:%d\n", i, bmp_config->encoder.pin_a[i], bmp_config->encoder.pin_b[i], bmp_config->encoder.resolution[i], (long)encoder_raw_total[i], encoder_value[i], encoder_unsent[i]);
     }
 }
 
@@ -148,6 +159,7 @@ bool encoder_task(void) {
 
     for (int index = 0; index < encoder_count; index++) {
         int32_t encoder_diff = BMPAPI->encoder.get_count(index);
+        encoder_raw_total[index] += encoder_diff;
         encoder_value[index] += encoder_diff;
 
         int8_t resolution = bmp_config->encoder.resolution[index];
