@@ -145,7 +145,9 @@ void encoder_init(void) {
 void bmp_encoder_print_status(void) {
     printf("mode:%d count:%d init:%d\n", bmp_config->mode, encoder_count, encoder_init_result);
     for (int i = 0; i < encoder_count; i++) {
-        printf("enc%d a:%d b:%d res:%d raw_total:%ld value:%d unsent:%d\n", i, bmp_config->encoder.pin_a[i], bmp_config->encoder.pin_b[i], bmp_config->encoder.resolution[i], (long)encoder_raw_total[i], encoder_value[i], encoder_unsent[i]);
+        uint8_t pin_a = bmp_config->encoder.pin_a[i];
+        uint8_t pin_b = bmp_config->encoder.pin_b[i];
+        printf("enc%d a:%d(%d) b:%d(%d) res:%d raw_total:%ld value:%d unsent:%d\n", i, pin_a, (int)BMPAPI->gpio.read_pin(pin_a), pin_b, (int)BMPAPI->gpio.read_pin(pin_b), bmp_config->encoder.resolution[i], (long)encoder_raw_total[i], encoder_value[i], encoder_unsent[i]);
     }
 }
 
