@@ -23,7 +23,8 @@
 #define NUM_ENCODERS_MAX 8
 
 // Split slave sends encoder steps to master as user data (id = base + encoder index)
-#define ENCODER_USER_DATA_ID_BASE 0xE0
+// Bootloader 1.4.1 rejects user data ids above 78 ("id exceeds limit")
+#define ENCODER_USER_DATA_ID_BASE 0x10
 #define REMOTE_EVENT_QUEUE_SIZE 16
 
 static int    encoder_count                    = 0;
