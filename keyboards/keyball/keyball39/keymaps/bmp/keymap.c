@@ -67,14 +67,35 @@ void keyboard_post_init_user(void) {
     // Boot default on both halves: white breathing, not saved to EEPROM.
     // Each half sets this itself; the slave does not wait for the L/R link.
     rgblight_enable_noeeprom();
-    rgblight_sethsv_noeeprom(HSV_WHITE);
+    rgblight_sethsv_noeeprom(HSV_WHITE); // = layer 0 color
     rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
+}
+#endif
+
+#ifdef RGBLIGHT_ENABLE
+// Breathing color per layer (Japanese traditional colors, low saturation).
+static const uint8_t PROGMEM layer_hs[][2] = {
+    [0] = {0, 0},     // 月白 geppaku  : white       (normal)
+    [1] = {130, 110}, // 浅葱 asagi    : blue-green  (mouse / arrows)
+    [2] = {95, 100},  // 青磁 seiji    : celadon     (numbers / fn)
+    [3] = {195, 100}, // 藤   fuji     : wisteria    (symbols)
+    [4] = {250, 110}, // 珊瑚 sango    : coral       (fn)
+    [5] = {30, 130},  // 刈安 kariyasu : muted amber (tenkey)
+};
+
+static void set_layer_color(layer_state_t state) {
+    uint8_t layer = get_highest_layer(state);
+    if (layer >= sizeof(layer_hs) / sizeof(layer_hs[0])) layer = 0;
+    rgblight_sethsv_noeeprom(pgm_read_byte(&layer_hs[layer][0]), pgm_read_byte(&layer_hs[layer][1]), rgblight_get_val());
 }
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     // Auto enable scroll mode when the highest layer is 3
     keyball_set_scroll_mode(get_highest_layer(state) == 3);
+#ifdef RGBLIGHT_ENABLE
+    set_layer_color(state);
+#endif
     return state;
 }
 
