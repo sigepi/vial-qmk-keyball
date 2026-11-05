@@ -35,6 +35,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAP_CODE_DELAY 5
 
+// Extra CLI commands (see pmw_cli.c)
+#ifndef __ASSEMBLER__
+#    include "microshell/core/msconf.h"
+#    include "microshell/util/mscmd.h"
+#    define USER_DEFINED_MSCMD {"pmw", usrcmd_pmw, "PMW3360 status / pmw <n>: set CPI reg"},
+MSCMD_USER_RESULT usrcmd_pmw(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
+#endif
+
 #define POINTING_DEVICE_AUTO_MOUSE_ENABLE
 #define AUTO_MOUSE_DEFAULT_LAYER 1
 

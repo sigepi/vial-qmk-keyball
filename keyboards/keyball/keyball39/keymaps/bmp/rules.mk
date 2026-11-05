@@ -9,3 +9,6 @@ VIAL_INSECURE = yes
 # Rotary encoders on split slave (left), forwarded to master by bmp_encoder.c
 ENCODER_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
+
+# CLI command "pmw" (PMW3360 diagnostics)
+SRC += pmw_cli.c
