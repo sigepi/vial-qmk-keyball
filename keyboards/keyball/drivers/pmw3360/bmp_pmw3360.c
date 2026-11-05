@@ -157,7 +157,7 @@ uint8_t pmw3360_srom_id = 0;
 void pmw3360_srom_upload(pmw3360_srom_t srom) {
     pmw3360_reg_write(pmw3360_Config2, 0x00);
     pmw3360_reg_write(pmw3360_SROM_Enable, 0x1d);
-    wait_us(10);
+    wait_ms(10); // one frame, as in QMK pmw33xx_common.c
     pmw3360_reg_write(pmw3360_SROM_Enable, 0x18);
 
     // SROM upload (download for PMW3360) with burst mode
