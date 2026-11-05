@@ -164,6 +164,16 @@
       "shortName": "JU\nOVR"
     },
     {
+      "name": "EN_WEBBT",
+      "title": "Enable Web Bluetooth connection",
+      "shortName": "WEB\nBT ON"
+    },
+    {
+      "name": "DIS_WEBBT",
+      "title": "Disable Web Bluetooth connection",
+      "shortName": "WEB\nBT OFF"
+    },
+    {
       "name": "KBC_RST",
       "title": "Reset Keyball configuration",
       "shortName": "KBC\nRST"
