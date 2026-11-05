@@ -62,6 +62,16 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 #endif
 // clang-format on
 
+#ifdef RGBLIGHT_ENABLE
+void keyboard_post_init_user(void) {
+    // Boot default on both halves: white breathing, not saved to EEPROM.
+    // Each half sets this itself; the slave does not wait for the L/R link.
+    rgblight_enable_noeeprom();
+    rgblight_sethsv_noeeprom(HSV_WHITE);
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
+}
+#endif
+
 layer_state_t layer_state_set_user(layer_state_t state) {
     // Auto enable scroll mode when the highest layer is 3
     keyball_set_scroll_mode(get_highest_layer(state) == 3);
