@@ -35,6 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAP_CODE_DELAY 5
 
+// Upload SROM to PMW3360 at boot. Without it the sensor caps CPI at 3500.
+#define KEYBALL_PMW3360_UPLOAD_SROM_ID 0x04
+
 // Extra CLI commands (see pmw_cli.c)
 #ifndef __ASSEMBLER__
 #    include "microshell/core/msconf.h"
