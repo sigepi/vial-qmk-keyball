@@ -91,6 +91,9 @@ static void set_layer_color(layer_state_t state) {
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
+    // Tri-layer: lower (2) + raise (3) = adjust (4). Works with any key that
+    // turns on layers 2/3 (MO, LT, TD ...).
+    state = update_tri_layer_state(state, 2, 3, 4);
 #ifdef RGBLIGHT_ENABLE
     set_layer_color(state);
 #endif
