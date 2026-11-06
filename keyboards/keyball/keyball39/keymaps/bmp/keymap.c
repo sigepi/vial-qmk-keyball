@@ -74,19 +74,28 @@ void keyboard_post_init_user(void) {
 
 #ifdef RGBLIGHT_ENABLE
 // Breathing color per layer (Japanese traditional colors, low saturation).
+// Layer 4 (adjust) is not in the table: it is the mix of 2 (lower) and 3 (raise).
 static const uint8_t PROGMEM layer_hs[][2] = {
-    [0] = {0, 0},     // 月白 geppaku  : white       (normal)
-    [1] = {130, 110}, // 浅葱 asagi    : blue-green  (mouse / arrows)
-    [2] = {95, 100},  // 青磁 seiji    : celadon     (numbers / fn)
-    [3] = {195, 100}, // 藤   fuji     : wisteria    (symbols)
-    [4] = {250, 110}, // 珊瑚 sango    : coral       (fn)
-    [5] = {30, 130},  // 刈安 kariyasu : muted amber (tenkey)
+    [0] = {0, 0},     // 月白   geppaku     : white      (normal)
+    [1] = {145, 110}, // 勿忘草 wasurenagusa: sky blue   (mouse / arrows)
+    [2] = {244, 120}, // 鴇色   toki        : pale pink  (lower: numbers)
+    [3] = {37, 140},  // 菜の花 nanohana    : pale yellow (raise: symbols)
+    [4] = {0, 0},     // 杏     anzu        : pale orange (adjust) = mix of 2 and 3
+    [5] = {191, 180}, // 藤紫   fujimurasaki: purple, stronger (tenkey)
 };
 
 static void set_layer_color(layer_state_t state) {
     uint8_t layer = get_highest_layer(state);
     if (layer >= sizeof(layer_hs) / sizeof(layer_hs[0])) layer = 0;
-    rgblight_sethsv_noeeprom(pgm_read_byte(&layer_hs[layer][0]), pgm_read_byte(&layer_hs[layer][1]), rgblight_get_val());
+    uint8_t hue = pgm_read_byte(&layer_hs[layer][0]);
+    uint8_t sat = pgm_read_byte(&layer_hs[layer][1]);
+    if (layer == 4) {
+        // Midpoint of lower and raise on the hue circle (shorter way round).
+        uint8_t h2 = pgm_read_byte(&layer_hs[2][0]), h3 = pgm_read_byte(&layer_hs[3][0]);
+        hue = h2 + (int8_t)(uint8_t)(h3 - h2) / 2;
+        sat = (pgm_read_byte(&layer_hs[2][1]) + pgm_read_byte(&layer_hs[3][1])) / 2;
+    }
+    rgblight_sethsv_noeeprom(hue, sat, rgblight_get_val());
 }
 #endif
 
