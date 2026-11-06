@@ -31,6 +31,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#    define RGBLIGHT_EFFECT_RGB_TEST
 //#    define RGBLIGHT_EFFECT_ALTERNATING
 //#    define RGBLIGHT_EFFECT_TWINKLE
+// Brightness cap 50% (keyboard default 150). Breathing peaks at this value.
+#    undef RGBLIGHT_LIMIT_VAL
+#    define RGBLIGHT_LIMIT_VAL 128
 #endif
 
 #define TAP_CODE_DELAY 5
