@@ -19,6 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include QMK_KEYBOARD_H
 
 #include "quantum.h"
+#include "state_controller.h"
+#include "bmp_host_driver.h"
+
+// The slave (left) must not send keys to the PC over its own USB.
+// BMP switches to USB output when USB HID is ready before BLE connects, and the
+// slave would then type with its own (unused) keymap. Keep it in BLE mode, the
+// same state as running on battery. Vial/CLI/MSC over USB are not affected.
+void bmp_state_change_cb_user(bmp_api_event_t event) {
+    if (event == USB_HID_READY && !is_keyboard_master()) {
+        select_ble();
+    }
+}
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
