@@ -35,6 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAP_CODE_DELAY 5
 
+// Turn the OLED off after 10 s without key, ball or encoder input (default 60 s).
+#define OLED_TIMEOUT 10000
+
 // Upload SROM to PMW3360 at boot. Without it the sensor caps CPI at 3500.
 #define KEYBALL_PMW3360_UPLOAD_SROM_ID 0x04
 
