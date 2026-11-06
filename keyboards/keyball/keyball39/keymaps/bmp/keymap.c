@@ -76,12 +76,12 @@ void keyboard_post_init_user(void) {
 // Breathing color per layer (Japanese traditional colors, low saturation).
 // Layer 4 (adjust) is not in the table: it is the mix of 2 (lower) and 3 (raise).
 static const uint8_t PROGMEM layer_hs[][2] = {
-    [0] = {0, 0},     // 月白   geppaku     : white      (normal)
-    [1] = {145, 110}, // 勿忘草 wasurenagusa: sky blue   (mouse / arrows)
-    [2] = {244, 120}, // 鴇色   toki        : pale pink  (lower: numbers)
-    [3] = {37, 140},  // 菜の花 nanohana    : pale yellow (raise: symbols)
-    [4] = {0, 0},     // 杏     anzu        : pale orange (adjust) = mix of 2 and 3
-    [5] = {191, 180}, // 藤紫   fujimurasaki: purple, stronger (tenkey)
+    [0] = {0, 0},     // 月白   geppaku     : white       (normal)
+    [1] = {113, 110}, // 薄荷   hakka       : choco-mint  (mouse / arrows)
+    [2] = {145, 110}, // 勿忘草 wasurenagusa: sky blue    (lower: numbers)
+    [3] = {245, 120}, // 鴇色   toki        : pale pink   (raise: symbols)
+    [4] = {0, 0},     // 藤     fuji        : wisteria    (adjust) = mix of 2 and 3
+    [5] = {28, 220},  // 山吹   yamabuki    : yellow, stronger (tenkey)
 };
 
 static void set_layer_color(layer_state_t state) {
