@@ -92,8 +92,17 @@ static void set_layer_color(layer_state_t state) {
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     // Tri-layer: lower (2) + raise (3) = adjust (4). Works with any key that
-    // turns on layers 2/3 (MO, LT, TD ...).
-    state = update_tri_layer_state(state, 2, 3, 4);
+    // turns on layers 2/3 (MO, LT, TD ...). Unlike update_tri_layer_state(),
+    // only clear layer 4 if the tri-layer turned it on, so MO(4) still works.
+    static bool tri_on = false;
+    const layer_state_t lower_raise = ((layer_state_t)1 << 2) | ((layer_state_t)1 << 3);
+    if ((state & lower_raise) == lower_raise) {
+        state |= (layer_state_t)1 << 4;
+        tri_on = true;
+    } else if (tri_on) {
+        state &= ~((layer_state_t)1 << 4);
+        tri_on = false;
+    }
 #ifdef RGBLIGHT_ENABLE
     set_layer_color(state);
 #endif
