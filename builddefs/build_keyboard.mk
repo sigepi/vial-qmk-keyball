@@ -60,7 +60,14 @@ endif
 
 # Generate the board's version.h file.
 $(shell $(QMK_BIN) generate-version-h $(VERSION_H_FLAGS) -q -o $(INTERMEDIATE_OUTPUT)/src/version.h)
+# Vial resets the keymap in EEPROM when BUILD_ID changes. A random id is made per
+# build unless VIAL_BUILD_ID (e.g. 0x0050CDA4, 24 bits) is given, which keeps the
+# keymap across rebuilds of the same layout.
+ifdef VIAL_BUILD_ID
+$(shell echo '#define BUILD_ID ((uint32_t)$(VIAL_BUILD_ID))' >> $(INTERMEDIATE_OUTPUT)/src/version.h)
+else
 $(shell python3 util/build_id.py >> $(INTERMEDIATE_OUTPUT)/src/version.h)
+endif
 
 # Determine which subfolders exist.
 KEYBOARD_FOLDER_PATH_1 := $(KEYBOARD)
