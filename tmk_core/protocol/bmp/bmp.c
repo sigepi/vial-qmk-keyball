@@ -129,14 +129,19 @@ bmp_error_t msc_write_callback(const uint8_t *dat, uint32_t len) {
     return BMP_OK;
 }
 
+// Slave: called for master -> slave NUS data that is not an RGB sync packet.
+__attribute__((weak)) void bmp_nus_rcv_user(const uint8_t *dat, uint32_t len) {}
+
 bmp_error_t nus_rcv_callback(const uint8_t *dat, uint32_t len) {
 
 #ifdef RGBLIGHT_SPLIT
     if (len == sizeof(rgblight_syncinfo_t)) {
         rgblight_update_sync((rgblight_syncinfo_t *)dat, false);
+        return BMP_OK;
     }
 #endif
 
+    bmp_nus_rcv_user(dat, len);
     return BMP_OK;
 }
 
