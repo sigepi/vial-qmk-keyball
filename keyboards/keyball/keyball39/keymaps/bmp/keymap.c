@@ -164,6 +164,12 @@ void housekeeping_task_user(void) {
     }
 }
 
+// Left OLED without the 180-degree rotation oledkit uses for its logo: the user
+// reads the left OLED the other way round, and the images are made for that.
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+    return rotation;
+}
+
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
         oledkit_render_info_user();
@@ -173,8 +179,8 @@ bool oled_task_user(void) {
         slave_layer_new = false;
         oled_on(); // wake on layer change, also when it came from the right half
     }
-    // layer_images[0] is the keyball logo rotated 180 degrees (user choice);
-    // layers without an image show it too.
+    // layer_images[0] is the keyball logo (centered); layers without an image
+    // show it too.
     uint8_t layer = slave_layer;
     if (layer >= sizeof(layer_images) / sizeof(layer_images[0])) layer = 0;
     oled_set_cursor(0, 0);
