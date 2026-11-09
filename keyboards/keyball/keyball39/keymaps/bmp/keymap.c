@@ -173,21 +173,12 @@ bool oled_task_user(void) {
         slave_layer_new = false;
         oled_on(); // wake on layer change, also when it came from the right half
     }
-    // Layer 0 (and layers without an image) show the keyball logo.
-    // layer_images[0] is layer 1.
-    uint8_t        layer = slave_layer;
-    bool           logo  = layer == 0 || layer > sizeof(layer_images) / sizeof(layer_images[0]);
-    static uint8_t drawn = 0xFF;
-    if (layer != drawn) {
-        oled_clear(); // the logo does not cover the whole screen
-        drawn = layer;
-    }
+    // layer_images[0] is the keyball logo rotated 180 degrees (user choice);
+    // layers without an image show it too.
+    uint8_t layer = slave_layer;
+    if (layer >= sizeof(layer_images) / sizeof(layer_images[0])) layer = 0;
     oled_set_cursor(0, 0);
-    if (logo) {
-        oledkit_render_logo_user();
-    } else {
-        oled_write_raw_P(layer_images[layer - 1], sizeof(layer_images[0]));
-    }
+    oled_write_raw_P(layer_images[layer], sizeof(layer_images[0]));
     return false;
 }
 #endif
