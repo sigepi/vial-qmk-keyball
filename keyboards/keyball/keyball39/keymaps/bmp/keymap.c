@@ -179,7 +179,7 @@ bool oled_task_user(void) {
         slave_layer_new = false;
         oled_on(); // wake on layer change, also when it came from the right half
     }
-    // layer_images[0] is the keyball logo (where oledkit draws it); layers without an image
+    // layer_images[0] is the keyball logo, 2 px right of oledkit's position as the user sees it; layers without an image
     // show it too.
     uint8_t layer = slave_layer;
     if (layer >= sizeof(layer_images) / sizeof(layer_images[0])) layer = 0;
