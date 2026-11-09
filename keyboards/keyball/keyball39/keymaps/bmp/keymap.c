@@ -121,10 +121,62 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #ifdef OLED_ENABLE
 
 #    include "lib/oledkit/oledkit.h"
+#    include "apidef.h"
+#    include "layer_images.h"
 
 void oledkit_render_info_user(void) {
     keyball_oled_render_keyinfo();
     keyball_oled_render_ballinfo();
     keyball_oled_render_layerinfo();
+}
+
+// Left (slave) OLED shows an image per layer. The slave does not know the
+// layer, so the master sends it over NUS (same path as the RGB sync): on
+// change, and every second so it arrives after the L/R link comes up.
+#    define LAYER_PKT_0 0x4C // 'L'
+#    define LAYER_PKT_1 0xA7
+#    ifdef RGBLIGHT_SPLIT
+_Static_assert(sizeof(rgblight_syncinfo_t) != 3, "layer packet must not look like an RGB sync");
+#    endif
+
+static volatile uint8_t slave_layer     = 0;
+static volatile bool    slave_layer_new = false;
+
+void bmp_nus_rcv_user(const uint8_t *dat, uint32_t len) {
+    if (len == 3 && dat[0] == LAYER_PKT_0 && dat[1] == LAYER_PKT_1) {
+        if (dat[2] != slave_layer) {
+            slave_layer     = dat[2];
+            slave_layer_new = true;
+        }
+    }
+}
+
+void housekeeping_task_user(void) {
+    if (!is_keyboard_master()) return;
+    static uint8_t  sent  = 0xFF;
+    static uint32_t timer = 0;
+    uint8_t layer = get_highest_layer(layer_state | default_layer_state);
+    if (layer != sent || timer_elapsed32(timer) > 1000) {
+        uint8_t pkt[3] = {LAYER_PKT_0, LAYER_PKT_1, layer};
+        BMPAPI->ble.nus_send_bytes(pkt, sizeof(pkt));
+        sent  = layer;
+        timer = timer_read32();
+    }
+}
+
+bool oled_task_user(void) {
+    if (is_keyboard_master()) {
+        oledkit_render_info_user();
+        return false;
+    }
+    if (slave_layer_new) {
+        slave_layer_new = false;
+        oled_on(); // wake on layer change, also when it came from the right half
+    }
+    uint8_t layer = slave_layer;
+    if (layer >= sizeof(layer_images) / sizeof(layer_images[0])) layer = 0;
+    oled_set_cursor(0, 0);
+    oled_write_raw_P(layer_images[layer], sizeof(layer_images[0]));
+    return false;
 }
 #endif
