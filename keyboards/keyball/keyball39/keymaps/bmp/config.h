@@ -57,3 +57,12 @@ MSCMD_USER_RESULT usrcmd_pmw(MSOPT *msopt, MSCMD_USER_OBJECT usrobj);
 
 // Pins are set in CONFIG.BIN (encoder.pin_a/pin_b), not here
 #define NUM_ENCODERS 2
+
+// AML trial: sticky automatic mouse layer (own code in keymap.c, not core AML).
+// Ball movement turns AML_LAYER on; only the AML_EXIT key turns it off.
+// Remove AML_TRIAL to drop the feature.
+#define AML_TRIAL
+#define AML_LAYER 1         // mouse layer
+#define AML_THRESHOLD 10    // ball counts needed to turn the layer on
+#define AML_DELAY 250       // ms since the last key press before the ball can turn it on
+#define AML_ACC_RESET 100   // ms without movement that resets the count

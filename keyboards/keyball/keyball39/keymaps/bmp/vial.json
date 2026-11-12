@@ -252,6 +252,11 @@
       "name": "AML_D50",
       "title": "Decrease 50ms automatic mouse layer timeout(min 1=250ms)",
       "shortName": "AML\nD50"
+    },
+    {
+      "name": "AML_EXIT",
+      "title": "Leave the sticky mouse layer (AML trial)",
+      "shortName": "AML\nEXIT"
     }
   ]
 }

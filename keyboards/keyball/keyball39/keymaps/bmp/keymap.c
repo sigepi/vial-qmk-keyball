@@ -99,7 +99,50 @@ static void set_layer_color(layer_state_t state) {
 }
 #endif
 
+#ifdef AML_TRIAL
+// Sticky automatic mouse layer (trial). Ball movement on the base layer turns
+// AML_LAYER on, it stays on through any key, and AML_EXIT (sends nothing)
+// turns it off. Releasing a MO/LT of AML_LAYER also turns it off (QMK layer).
+enum { AML_EXIT = KEYBALL_SAFE_RANGE };
+
+static bool     aml_sticky    = false;
+static uint32_t aml_last_key  = 0;
+static uint32_t aml_last_move = 0;
+static uint16_t aml_count     = 0;
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) aml_last_key = timer_read32();
+    if (keycode == AML_EXIT) {
+        if (record->event.pressed && aml_sticky) {
+            aml_sticky = false;
+            layer_off(AML_LAYER);
+        }
+        return false;
+    }
+    return true;
+}
+
+report_mouse_t pointing_device_task_user(report_mouse_t r) {
+    uint16_t m = abs(r.x) + abs(r.y) + abs(r.h) + abs(r.v);
+    if (m == 0) return r;
+    uint32_t now = timer_read32();
+    if (TIMER_DIFF_32(now, aml_last_move) > AML_ACC_RESET) aml_count = 0;
+    aml_last_move = now;
+    aml_count     = MIN(aml_count + m, 1000);
+    if (!aml_sticky && get_highest_layer(layer_state) == 0 && aml_count > AML_THRESHOLD &&
+        TIMER_DIFF_32(now, aml_last_key) >= AML_DELAY) {
+        aml_sticky = true;
+        layer_on(AML_LAYER);
+    }
+    return r;
+}
+#endif
+
 layer_state_t layer_state_set_user(layer_state_t state) {
+#ifdef AML_TRIAL
+    // AML_LAYER went off some other way (MO/LT release): not sticky any more.
+    if (aml_sticky && !(state & ((layer_state_t)1 << AML_LAYER))) aml_sticky = false;
+#endif
     // Tri-layer: lower (2) + raise (3) = adjust (4). Works with any key that
     // turns on layers 2/3 (MO, LT, TD ...). Unlike update_tri_layer_state(),
     // only clear layer 4 if the tri-layer turned it on, so MO(4) still works.
